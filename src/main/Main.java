@@ -6,12 +6,14 @@
 
 package main;
 
+import editor.*;
+
 /**
  *
  * @author nes
  */
 public class Main {
     public static void main(String args[]) {
-        
+        Editor edit = new Editor();
     }
 }
