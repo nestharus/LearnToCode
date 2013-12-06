@@ -7,6 +7,7 @@
 package main;
 
 import editor.*;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -14,6 +15,10 @@ import editor.*;
  */
 public class Main {
     public static void main(String args[]) {
-        Editor edit = new Editor();
+        SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                      new Editor();
+                }
+          });
     }
 }
