@@ -1,0 +1,36 @@
+For any given expression, elements within that expression may be deleted
+
+5 + 5 + 5
+
+
+If the 5 is deleted, the following is removed
+
+5 (+) [5] + 5 -> 5 + 5
+
+5 + 5 - 5
+5 (+) [5] - 5 -> 5 - 5
+
+5 + 5*6
+5 + [5](*)6 -> 5 + 6
+
+5 + 5/6*3
+5 + 5(/)[6]*3 -> 5 + 5*3
+
+
+If an operator is deleted
+
+5 + 5 + 5
+5 + 5 [+] (5) -> 5 + 5
+
+5 + 5 - 5
+5 + 5 [-] (5) -> 5 + 5
+
+5 + 5*6
+5 + 5[*](6) -> 5 + 5
+
+
+Multiple elements may be selected for deletion (like text)
+
+An element may be edited
+
+5 + 5 + 5 -> 5 + 5 - 5
