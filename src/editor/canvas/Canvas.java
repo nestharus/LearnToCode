@@ -34,6 +34,8 @@ import javax.swing.table.TableCellEditor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import javax.swing.SwingUtilities;
+import java.awt.Point;
 
 import java.awt.Color;
 import java.util.EventObject;
@@ -109,6 +111,26 @@ public class Canvas extends JTable {
             return component;
         }
     } //Renderer
+    
+    /*
+    *   Disable drag selection
+    */
+    @Override protected void processMouseEvent(MouseEvent event) {
+        if (
+            event.getID() == MouseEvent.MOUSE_PRESSED
+            && SwingUtilities.isLeftMouseButton(event)
+            && !event.isShiftDown() && !event.isControlDown()) {
+                Point point = event.getPoint();
+             
+                int row = rowAtPoint(point);
+                int col = columnAtPoint(point);
+                if (row >= 0 && col >= 0 && !super.isCellSelected(row, col)) {
+                    changeSelection(row, col, false, false);
+                }
+        } //if
+        
+        super.processMouseEvent(event);
+   }
     
     public Canvas() {
         super(new CanvasModel());
