@@ -1,6 +1,5 @@
 package editor.canvas;
 
-import editor.toolbars.Toolbar;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
