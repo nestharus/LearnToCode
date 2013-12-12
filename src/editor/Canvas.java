@@ -53,6 +53,8 @@ public class Canvas extends JList {
             *   Called when transfer is done
             */
             @Override protected void exportDone(JComponent component, Transferable data, int action) {
+                if (action == 0) return;
+                
                 JList list = (JList)component;
                 DefaultListModel listModel = (DefaultListModel)list.getModel();
                 
