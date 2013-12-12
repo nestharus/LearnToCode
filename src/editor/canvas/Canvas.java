@@ -40,6 +40,9 @@ import java.awt.Point;
 import java.awt.Color;
 import java.util.EventObject;
 
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
+
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
 
 import javax.swing.JLabel;
@@ -54,7 +57,7 @@ public class Canvas extends JTable {
         
         //Implement the one CellEditor method that AbstractCellEditor doesn't.
         public Object getCellEditorValue() {
-            System.out.println("finished");
+            //System.out.println("finished");
             
             return value;
         }
@@ -76,9 +79,9 @@ public class Canvas extends JTable {
         }
         
         @Override public boolean isCellEditable(EventObject e) {
-            if (e instanceof MouseEvent) { return ((MouseEvent)e).getClickCount() >= 2; }
+            //if (e instanceof MouseEvent) { return ((MouseEvent)e).getClickCount() >= 2; }
 
-            return false;
+            return true;
         }
     }
     private class Renderer extends Component implements TableCellRenderer {
@@ -145,11 +148,9 @@ public class Canvas extends JTable {
         setAutoscrolls(true);
         
         setTransferHandler(new TransferHandler() {
-            private Component[] addedElements;
-            
             private final DataFlavor localObjectFlavor = 
                     new ActivationDataFlavor (
-                        int[].class,
+                        Component[].class,
                         DataFlavor.javaJVMLocalObjectMimeType,
                         "List of elements"
                     );
@@ -158,7 +159,17 @@ public class Canvas extends JTable {
             *   Bundles data up in preparation for transfer
             */
             @Override protected Transferable createTransferable(JComponent component) {
-                return new DataHandler(((JTable)component).getSelectedRows(), localObjectFlavor.getMimeType());
+                int[] rows = ((JTable)component).getSelectedRows();
+                CanvasModel model = (CanvasModel)((JTable)component).getModel();
+                
+                Component[] elements = new Component[rows.length];
+                int elementCount = 0;
+                
+                for (int row : rows) {
+                    elements[elementCount++] = (Component)model.getValueAt(row, 0);
+                }
+                
+                return new DataHandler(elements, localObjectFlavor.getMimeType());
             } //Transferable
 
             /*
@@ -183,6 +194,7 @@ public class Canvas extends JTable {
                     canvasModel.removeElement(indices[index]);
                 }
                 
+                /*
                 Component element;
                 
                 clearSelection();
@@ -192,12 +204,11 @@ public class Canvas extends JTable {
                     
                     for (Component other : addedElements) {
                         if (other == element) {
-                            changeSelection(index, 0, true, false);
+                            //changeSelection(index, 0, true, false);
                         }
                     }
                 } //for
-                
-                addedElements = null;
+                */
             } //exportDone
 
             /*
@@ -209,8 +220,8 @@ public class Canvas extends JTable {
                 */
 
                 Class componentClass = info.getComponent().getClass();
-
-                return info.isDrop() && info.isDataFlavorSupported(localObjectFlavor) && (componentClass == Toolbar.class || componentClass == Canvas.class);
+                
+                return info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
             } //canImport
 
             /*
@@ -234,18 +245,11 @@ public class Canvas extends JTable {
                 }
 
                 try {
-                    int[] indices = (int[])info.getTransferable().getTransferData(localObjectFlavor);
-                    Component[] elements = new Component[indices.length];
-                    int elementCount = 0;
-                    
-                    addedElements = elements;
-                    
-                    for (int position : indices) {
-                        elements[elementCount++] = (Component)canvasModel.getValueAt(position, 0);
-                    }
+                    Component[] elements = (Component[])info.getTransferable().getTransferData(localObjectFlavor);
                     
                     for (Component element : elements) {
                         canvasModel.addElement(index++, element);
+                        System.out.println(getRowCount());
                         
                         if (isCellSelected(index - 1, 0)){
                             changeSelection(index - 1, 0, true, false);
