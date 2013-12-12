@@ -28,6 +28,8 @@ public class Testing2 {
         JPanel ipanel = new JPanel();
         ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
         ipanel.setPreferredSize(new Dimension(200, 25));
+        Dimension d = new Dimension(15, 0);
+        ipanel.add(new Box.Filler(d, d, d));
         ipanel.add(new JCheckBox());
         JTextField field = new JTextField();
         field.setColumns(15);
@@ -50,8 +52,10 @@ public class Testing2 {
                 
                 DefaultTreeModel tree = (DefaultTreeModel)editor.getModel();
                 DefaultMutableTreeNode nested = new DefaultMutableTreeNode(new JLabel("nested"));
+                ((JLabel)nested.getUserObject()).setOpaque(true);
                 
                 tree.insertNodeInto(nested, (MutableTreeNode)tree.getRoot(), 0);
+                tree.reload();
                 
                 populateCanvas(tree, (DefaultMutableTreeNode)tree.getRoot(), new String[]{"test 1", "test 2", "test 3"});
                 populateCanvas(tree, nested, new String[]{"test 4", "test 5", "test 6"});
@@ -68,11 +72,7 @@ public class Testing2 {
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
                 
-                for (int i = 0; i < editor.getRowCount(); i++) {
-                         editor.expandRow(i);
-                }
-                
-                editor.setRootVisible(false);
+                editor.expand();
             }
         });
     }
