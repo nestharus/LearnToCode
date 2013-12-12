@@ -1,11 +1,14 @@
 package editor;
 
+import editor.canvas.Canvas;
 import editor.toolbars.Toolbar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.*;
+import editor.canvas.*;
 
 public class Testing {
     public static void main(String args[]) {
@@ -46,18 +49,37 @@ public class Testing {
                     Canvas
                 */
                 Canvas canvas = new Canvas();
-                DefaultListModel<Object> canvasList = (DefaultListModel<Object>)canvas.getModel();
+                CanvasModel canvasList = (CanvasModel)canvas.getModel();
                 
-                canvasList.addElement("test 1");
-                canvasList.addElement("test 2");
-                canvasList.addElement("test 3");
-                canvasList.addElement("test 1");
+                JLabel label;
                 
-                canvas.setSize(new Dimension(200, 300));
+                label = new JLabel("test 1");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                label = new JLabel("test 2");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                label = new JLabel("test 3");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                
+                JPanel ipanel = new JPanel();
+                ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
+                ipanel.setPreferredSize(new Dimension(200, 25));
+                ipanel.add(new JCheckBox());
+                JTextField field = new JTextField();
+                field.setColumns(15);
+                ipanel.add(field);
+                canvasList.addElement(ipanel);
+                
+                //canvas.setSize(new Dimension(200, 300));
                 
                 canvas.setDropMode(DropMode.INSERT);
                 
-                panel.add(canvas);
+                JScrollPane pane = new JScrollPane(canvas);
+                pane.setPreferredSize(new Dimension(200, 300));
+                
+                panel.add(pane);
                 
                 frame.add(panel);
                 
