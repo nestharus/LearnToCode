@@ -50,6 +50,7 @@ public class Testing {
                 */
                 Canvas canvas = new Canvas();
                 CanvasModel canvasList = (CanvasModel)canvas.getModel();
+                CanvasModel original = canvasList;
                 
                 JLabel label;
                 
@@ -72,14 +73,50 @@ public class Testing {
                 ipanel.add(field);
                 canvasList.addElement(ipanel);
                 
-                //canvas.setSize(new Dimension(200, 300));
-                
                 canvas.setDropMode(DropMode.INSERT);
                 
                 JScrollPane pane = new JScrollPane(canvas);
+                JScrollPane firstPane = pane;
                 pane.setPreferredSize(new Dimension(200, 300));
                 
                 panel.add(pane);
+                
+                canvas = new Canvas();
+                canvasList = (CanvasModel)canvas.getModel();
+                
+                label = new JLabel("test 1");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                label = new JLabel("test 2");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                label = new JLabel("test 3");
+                label.setOpaque(true);
+                canvasList.addElement(label);
+                
+                ipanel = new JPanel();
+                ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
+                ipanel.setPreferredSize(new Dimension(200, 25));
+                ipanel.add(new JCheckBox());
+                field = new JTextField();
+                field.setColumns(15);
+                ipanel.add(field);
+                canvasList.addElement(ipanel);
+                
+                canvas.setDropMode(DropMode.INSERT);
+                
+                pane = new JScrollPane(canvas);
+                pane.setPreferredSize(new Dimension(200, 90));
+                
+                JPanel newPanel = new JPanel();
+                newPanel.setLayout(new BoxLayout(newPanel, BoxLayout.LINE_AXIS));
+                Dimension dimension = new Dimension(15, 0);
+                newPanel.add(new Box.Filler(dimension, dimension, dimension));
+                newPanel.add(pane);
+                
+                original.addElement(newPanel);
+                
+                panel.add(firstPane);
                 
                 frame.add(panel);
                 
