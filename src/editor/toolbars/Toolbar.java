@@ -29,6 +29,7 @@ public class Toolbar extends JToolBar {
     public Toolbar() {
         
         setOrientation(JToolBar.TOP);
+        setFloatable(false);
         
         //setDragEnabled(true);
         
@@ -37,5 +38,9 @@ public class Toolbar extends JToolBar {
         /*
         dragFrom.setTransferHandler(new FromTransferHandler());
         */
+        
+        setTransferHandler(new TransferHandler() {
+            
+        });
     }
 }
