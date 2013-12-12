@@ -38,9 +38,6 @@ class DragListener implements DragSourceListener, DragGestureListener {
                         DnDConstants.ACTION_COPY_OR_MOVE, 
                         this
                 );
-            //ACTION_MOVE does not allow for drag and drop on the same JList
-        //and using ACTION_COPY_OR_MOVE or ACTION_COPY it is copying the index
-        //not moving the actual string :(
     }
 
     public void dragGestureRecognized(DragGestureEvent dge) {

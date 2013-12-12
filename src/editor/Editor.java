@@ -24,11 +24,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
 import static javax.swing.TransferHandler.MOVE;
-import javax.swing.UIManager;
 
 public class Editor extends JFrame {
 
@@ -47,27 +45,8 @@ public class Editor extends JFrame {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-        JMenuBar jMenuBar1 = new javax.swing.JMenuBar();
-        JMenu jMenu1 = new javax.swing.JMenu();
-        JMenuItem jMenuItem1 = new javax.swing.JMenuItem();
-        JMenuItem jMenuItem2 = new javax.swing.JMenuItem();
-        JMenuItem jMenuItem3 = new javax.swing.JMenuItem();
-        JMenu jMenu2 = new javax.swing.JMenu();
-        JMenu jMenu3 = new javax.swing.JMenu();
-        jMenu1.setText("File");
-        jMenuItem1.setText("New Project");
-        jMenu1.add(jMenuItem1);
-        jMenuItem2.setText("Open Project");
-        jMenu1.add(jMenuItem2);
-        jMenuItem3.setText("Save Project");
-        jMenu1.add(jMenuItem3);
-        jMenuBar1.add(jMenu1);
-        jMenu2.setText("Something");
-        jMenuBar1.add(jMenu2);
-        jMenu3.setText("Something else");
-        jMenuBar1.add(jMenu3);
-        p.add(jMenuBar1);
-
+   
+        Components.addMenu(p); //Adding Menu
         add(p, BorderLayout.NORTH);
 
         p = new JPanel();
@@ -76,7 +55,7 @@ public class Editor extends JFrame {
         Dimension maximumS = new Dimension(0, 25);
         Dimension minimumS = new Dimension(0, 25);
         Dimension preferredS = new Dimension(0, 25);
-        p.add(new Box.Filler(minimumS, preferredS, maximumS));
+        p.add(new Box.Filler(minimumS, preferredS, maximumS)); //Just leaving a space between the menu and the labels/lists
 
         dragFrom = new JList(from);
         dragFrom.setTransferHandler(new FromTransferHandler());
@@ -99,7 +78,7 @@ public class Editor extends JFrame {
         p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
-        p.add(new Box.Filler(minimumS, preferredS, maximumS));
+        p.add(new Box.Filler(minimumS, preferredS, maximumS)); //Space between the first label and list
 
         label = new JLabel("Drop to COPY to here:");  //NEEDS TO BE CHANGED
         label.setAlignmentX(0f);
@@ -114,25 +93,15 @@ public class Editor extends JFrame {
         p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
-        p.add(new Box.Filler(minimumS, preferredS, maximumS));
+        p.add(new Box.Filler(minimumS, preferredS, maximumS)); //Space between the second label and list
 
         label = new JLabel("PANEL:");  //NEEDS TO BE CHANGED
         label.setAlignmentX(0f);
         p.add(label);
 
-        //Example
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        panel.setAlignmentX(0f);
-
-        Dimension dimension = new Dimension(70, 50);
-        panel.setMaximumSize(dimension);
-        panel.setMinimumSize(dimension);
-        panel.setPreferredSize(dimension);
-        panel.setBackground(Color.red);
-        p.add(panel);        
-        
+        //Example of adding components
+        Components.addPanel(0f, p, 170, 100);
+                
         p.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
         add(p, BorderLayout.EAST);
 
