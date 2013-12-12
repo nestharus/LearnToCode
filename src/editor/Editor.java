@@ -1,5 +1,6 @@
 package editor;
 
+import dragdrop.DragDropList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,10 +30,6 @@ import static javax.swing.TransferHandler.COPY_OR_MOVE;
 import static javax.swing.TransferHandler.MOVE;
 import javax.swing.UIManager;
 
-/**
- *
- * @author Lisette
- */
 public class Editor extends JFrame {
 
     DefaultListModel from = new DefaultListModel();
@@ -144,7 +141,7 @@ public class Editor extends JFrame {
         getContentPane().setPreferredSize(new Dimension(1700, 690));
     }
 
-    private static void createAndShowGUI() {
+    public static void createAndShowGUI() {
         //Create and set up the window.
         Editor test = new Editor();
         test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -152,16 +149,6 @@ public class Editor extends JFrame {
         //Display the window.
         test.pack();
         test.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                //Turn off metal's use of bold fonts
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-                createAndShowGUI();
-            }
-        });
     }
 
     class FromTransferHandler extends TransferHandler {
@@ -252,8 +239,3 @@ public class Editor extends JFrame {
         }
     }
 }
-
-
-
-    
-
