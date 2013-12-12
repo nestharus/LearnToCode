@@ -33,23 +33,28 @@ import javax.swing.event.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
 import java.awt.Color;
+import java.util.EventObject;
 
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
+
+import javax.swing.JLabel;
 
 /*
 *   Expects data in Object[] form from either another Canvas or the Toolbar.
 */
 public class Canvas extends JTable {
-    private class Editor extends AbstractCellEditor  implements TableCellEditor {
-        public Editor() {
-            
-        }
+    private class Editor extends AbstractCellEditor implements TableCellEditor {
+        private Component editValue;
+        private Component value;
         
         //Implement the one CellEditor method that AbstractCellEditor doesn't.
         public Object getCellEditorValue() {
-            return null;
+            System.out.println("finished");
+            
+            return value;
         }
 
         //Implement the one method defined by TableCellEditor.
@@ -59,7 +64,19 @@ public class Canvas extends JTable {
                                                      int row,
                                                      int column) {
             
+            this.value = (Component)value;
+            
             return (Component)value;
+        }
+        
+        public boolean editCellAt(int row, int column, EventObject e) {
+            return false;
+        }
+        
+        @Override public boolean isCellEditable(EventObject e) {
+            if (e instanceof MouseEvent) { return ((MouseEvent)e).getClickCount() >= 2; }
+
+            return false;
         }
     }
     private class Renderer extends Component implements TableCellRenderer {
@@ -72,27 +89,24 @@ public class Canvas extends JTable {
         ) {
             Component component = (Component) value;
             
+            int height = component.getPreferredSize().height;
+            
+            if (height < 10) {
+                height = 10;
+            }
+            
+            table.setRowHeight(row, height);
+            
             if (isSelected) {
-                component.setBackground(Color.BLUE);
+                component.setBackground(Color.GRAY);
             } 
             else {
                 component.setBackground(Color.WHITE);
             }
-
+            
             //setToolTipText(...); //Discussed in the following section
             
-            if (value instanceof JPanel) {
-                //component.setForeground (java.awt.Color.white);
-                //component.setBackground (isSelected ? javax.swing.UIManager.getColor("Table.focusCellForeground") : java.awt.Color.white);
-                
-                if (isSelected) {
-                    //component.setForeground (java.awt.Color.BLUE);
-                }
-                
-                return component;
-            } //if
-            
-            return (Component)value;
+            return component;
         }
     } //Renderer
     
@@ -104,13 +118,16 @@ public class Canvas extends JTable {
         
         setDragEnabled(true);
         
-        //getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        setShowHorizontalLines(false);
+        setAutoscrolls(true);
         
-        if (true) return;
         setTransferHandler(new TransferHandler() {
+            private Component[] addedElements;
+            
             private final DataFlavor localObjectFlavor = 
                     new ActivationDataFlavor (
-                        Object[].class,
+                        int[].class,
                         DataFlavor.javaJVMLocalObjectMimeType,
                         "List of elements"
                     );
@@ -119,7 +136,7 @@ public class Canvas extends JTable {
             *   Bundles data up in preparation for transfer
             */
             @Override protected Transferable createTransferable(JComponent component) {
-                return new DataHandler(((JList)component).getSelectedValuesList().toArray(), localObjectFlavor.getMimeType());
+                return new DataHandler(((JTable)component).getSelectedRows(), localObjectFlavor.getMimeType());
             } //Transferable
 
             /*
@@ -135,14 +152,30 @@ public class Canvas extends JTable {
             @Override protected void exportDone(JComponent component, Transferable data, int action) {
                 if (action == 0) return;
                 
-                JList list = (JList)component;
-                DefaultListModel listModel = (DefaultListModel)list.getModel();
+                JTable table = (JTable)component;
+                CanvasModel canvasModel = (CanvasModel)table.getModel();
                 
-                int[] indices = list.getSelectedIndices();
+                int[] indices = table.getSelectedRows();
                 
                 for (int index = indices.length - 1; index >= 0; --index) {
-                    listModel.removeElementAt(indices[index]);
+                    canvasModel.removeElement(indices[index]);
                 }
+                
+                Component element;
+                
+                clearSelection();
+                
+                for (int index = canvasModel.getRowCount() - 1; index >= 0; --index) {
+                    element = (Component)canvasModel.getValueAt(index, 0);
+                    
+                    for (Component other : addedElements) {
+                        if (other == element) {
+                            changeSelection(index, 0, true, false);
+                        }
+                    }
+                } //for
+                
+                addedElements = null;
             } //exportDone
 
             /*
@@ -167,22 +200,34 @@ public class Canvas extends JTable {
                     return false;
                 }
 
-                JList target = (JList)info.getComponent();
-                JList.DropLocation dropLocation = (JList.DropLocation)info.getDropLocation();
-                DefaultListModel listModel = (DefaultListModel)target.getModel();
+                JTable target = (JTable)info.getComponent();
+                JTable.DropLocation dropLocation = (JTable.DropLocation)info.getDropLocation();
+                CanvasModel canvasModel = (CanvasModel)target.getModel();
 
-                int index = dropLocation.getIndex();
-                int max = listModel.getSize();
+                int index = dropLocation.getRow();
+                int max = canvasModel.getRowCount();
 
                 if(index < 0 || index > max) {
                     index = max;
                 }
 
                 try {
-                    Object[] elements = (Object[])info.getTransferable().getTransferData(localObjectFlavor);
+                    int[] indices = (int[])info.getTransferable().getTransferData(localObjectFlavor);
+                    Component[] elements = new Component[indices.length];
+                    int elementCount = 0;
                     
-                    for (Object element : elements) {
-                        listModel.add(index++, element);
+                    addedElements = elements;
+                    
+                    for (int position : indices) {
+                        elements[elementCount++] = (Component)canvasModel.getValueAt(position, 0);
+                    }
+                    
+                    for (Component element : elements) {
+                        canvasModel.addElement(index++, element);
+                        
+                        if (isCellSelected(index - 1, 0)){
+                            changeSelection(index - 1, 0, true, false);
+                        } //if
                     }
                     
                     return true;

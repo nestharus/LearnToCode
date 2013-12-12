@@ -29,5 +29,18 @@ public class CanvasModel extends AbstractTableModel {
     }
     public void addElement(Component value) {
         elements.add(value);
+        
+        int size = elements.size() - 1;
+        fireTableRowsInserted(size, size);
+    }
+    public void removeElement(int row) {
+        elements.remove(row);
+        
+        int size = elements.size() - 1;
+        fireTableRowsDeleted(size, size);
+    }
+    public void addElement(int row, Component value) {
+        elements.add(row, value);
+        fireTableRowsInserted(row, row);
     }
 }
