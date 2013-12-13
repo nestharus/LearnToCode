@@ -36,8 +36,6 @@ public class Testing {
         ipanel.add(field);
         canvasList.addElement(ipanel);
         
-        canvas.setDropMode(DropMode.INSERT);
-        
         JScrollPane pane = new JScrollPane(canvas);
         if (nested) {
             pane.setPreferredSize(new Dimension(200, 100));

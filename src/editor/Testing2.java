@@ -22,8 +22,8 @@ public class Testing2 {
     
     private static void populateCanvas(DefaultTreeModel canvasTree, DefaultMutableTreeNode parent, String[] str) {
         canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[0])), parent, 0);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[1])), parent, 0);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[2])), parent, 0);
+        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[1])), parent, 1);
+        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[2])), parent, 2);
         
         JPanel ipanel = new JPanel();
         ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
@@ -34,7 +34,7 @@ public class Testing2 {
         JTextField field = new JTextField();
         field.setColumns(15);
         ipanel.add(field);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(ipanel), parent, 0);
+        canvasTree.insertNodeInto(new DefaultMutableTreeNode(ipanel), parent, 3);
     }
     
     public static void main(String args[]) {
@@ -54,10 +54,11 @@ public class Testing2 {
                 DefaultMutableTreeNode nested = new DefaultMutableTreeNode(new JLabel("nested"));
                 ((JLabel)nested.getUserObject()).setOpaque(true);
                 
-                tree.insertNodeInto(nested, (MutableTreeNode)tree.getRoot(), 0);
+                populateCanvas(tree, (DefaultMutableTreeNode)tree.getRoot(), new String[]{"test 1", "test 2", "test 3"});
                 tree.reload();
                 
-                populateCanvas(tree, (DefaultMutableTreeNode)tree.getRoot(), new String[]{"test 1", "test 2", "test 3"});
+                tree.insertNodeInto(nested, (MutableTreeNode)tree.getRoot(), editor.getRowCount());
+                
                 populateCanvas(tree, nested, new String[]{"test 4", "test 5", "test 6"});
                 
                 //editor.setPreferredSize(new Dimension(300, 400));

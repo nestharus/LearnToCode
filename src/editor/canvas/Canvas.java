@@ -41,6 +41,7 @@ import java.util.EventObject;
 
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
+import javax.swing.DropMode;
 
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
 
@@ -141,6 +142,8 @@ public class Canvas extends JTable {
         setDefaultEditor(Object.class, new Editor());
         
         setDragEnabled(true);
+        
+        setDropMode(DropMode.ON_OR_INSERT);
         
         getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         setShowHorizontalLines(false);
