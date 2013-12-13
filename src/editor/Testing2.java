@@ -20,10 +20,20 @@ public class Testing2 {
         return label;
     }
     
+    private static void addNode(DefaultTreeModel canvasTree, DefaultMutableTreeNode parent, Component component, int position) {
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode(component);
+        
+        node.setAllowsChildren(false);
+        
+        canvasTree.insertNodeInto(node, parent, position);
+    }
+    
     private static void populateCanvas(DefaultTreeModel canvasTree, DefaultMutableTreeNode parent, String[] str) {
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[0])), parent, 0);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[1])), parent, 1);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(getLabel(str[2])), parent, 2);
+        DefaultMutableTreeNode node;
+        
+        addNode(canvasTree, parent, getLabel(str[0]), 0);
+        addNode(canvasTree, parent, getLabel(str[1]), 1);
+        addNode(canvasTree, parent, getLabel(str[2]), 2);
         
         JPanel ipanel = new JPanel();
         ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
@@ -34,7 +44,7 @@ public class Testing2 {
         JTextField field = new JTextField();
         field.setColumns(15);
         ipanel.add(field);
-        canvasTree.insertNodeInto(new DefaultMutableTreeNode(ipanel), parent, 3);
+        addNode(canvasTree, parent, ipanel, 3);
     }
     
     public static void main(String args[]) {

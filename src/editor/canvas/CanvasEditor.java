@@ -2,6 +2,8 @@ package editor.canvas;
 
 import java.util.EventObject;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Arrays;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -11,6 +13,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -34,6 +38,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import static javax.swing.TransferHandler.COPY;
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
@@ -80,8 +85,6 @@ public class CanvasEditor extends JTree {
         *   Can edit
         */
         @Override public boolean isCellEditable(EventObject e) {
-            System.out.println(e.getSource().getClass().toString());
-            
             if (e instanceof MouseEvent) { return ((MouseEvent)e).getClickCount() >= 1; }
             
             return true;
@@ -193,34 +196,34 @@ public class CanvasEditor extends JTree {
                 ArrayList<DefaultMutableTreeNode> toRemove = new ArrayList();
                 
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)paths[0].getLastPathComponent();  
-                DefaultMutableTreeNode copy = new DefaultMutableTreeNode(node);  
-                
-                copies.add(copy);  
-                toRemove.add(node);
+                DefaultMutableTreeNode copy = new DefaultMutableTreeNode(node.getUserObject());  
                 
                 DefaultMutableTreeNode next;
+                
+                DefaultMutableTreeNode parent = null;
+                Enumeration e;
+                DefaultMutableTreeNode n;
+                DefaultMutableTreeNode copyNode;
                 
                 for (TreePath path : paths) {
                     next = (DefaultMutableTreeNode)path.getLastPathComponent();
                     
-                    if (next.getLevel() < node.getLevel()) {
-                        /*
-                        *   Parent
-                        */
-                        break;
-                    }
-                    else if (next.getLevel() > node.getLevel()) {
-                        /*
-                        *   Child
-                        */
-                        copy.add(new DefaultMutableTreeNode(next));
-                    }
-                    else {
-                        /*
-                        *   Sibling
-                        */
-                        copies.add(new DefaultMutableTreeNode(next));
-                        toRemove.add(next);
+                    parent = new DefaultMutableTreeNode(next.getUserObject());
+                    parent.setAllowsChildren(next.getAllowsChildren());
+
+                    copies.add(parent);
+                    toRemove.add(next);
+
+                    e = next.breadthFirstEnumeration();
+                    
+                    e.nextElement();
+
+                    while(e.hasMoreElements()) {  
+                        n = (DefaultMutableTreeNode)e.nextElement();   
+
+                        copyNode = new DefaultMutableTreeNode(n.getUserObject());
+                        copyNode.setAllowsChildren(n.getAllowsChildren());
+                        parent.add(copyNode);
                     }
                 } //for
                 
@@ -238,34 +241,6 @@ public class CanvasEditor extends JTree {
         @Override public int getSourceActions(JComponent component) {
             return COPY_OR_MOVE;
         } //getSourceActions
-        
-        /*
-        *   Debug purposes
-        */
-        private boolean childrenSelected(JTree tree) {
-            int[] selRows = tree.getSelectionRows();  
-            TreePath path = tree.getPathForRow(selRows[0]);  
-            DefaultMutableTreeNode first =  
-                (DefaultMutableTreeNode)path.getLastPathComponent();  
-            int childCount = first.getChildCount();  
-            // first has children and no children are selected.  
-            if(childCount > 0 && selRows.length == 1)  
-                return false;  
-            // first may have children.  
-            for(int i = 1; i < selRows.length; i++) {  
-                path = tree.getPathForRow(selRows[i]);  
-                DefaultMutableTreeNode next =  
-                    (DefaultMutableTreeNode)path.getLastPathComponent();  
-                if(first.isNodeChild(next)) {  
-                    // Found a child of first.  
-                    if(childCount > selRows.length-1) {  
-                        // Not all children of first are selected.  
-                        return false;  
-                    }  
-                }  
-            }  
-            return true;  
-        }  
         
         @Override public boolean canImport(TransferHandler.TransferSupport support) {
             if (!support.isDrop()) {
@@ -293,21 +268,14 @@ public class CanvasEditor extends JTree {
             } //for
             
             /*
-            *   All children will be selected in final implementation
-            */
-            int action = support.getDropAction();  
-            if (action == MOVE) {  
-                return childrenSelected(tree);  
-            } //if
-            
-            /*
             *   A parent node can't be moved into its children
             */
             TreePath destination = dropLocation.getPath(); 
-            DefaultMutableTreeNode target = (DefaultMutableTreeNode)destination.getLastPathComponent();  
+            DefaultMutableTreeNode target = (DefaultMutableTreeNode)destination.getLastPathComponent(); 
             TreePath path = tree.getPathForRow(selectedRows[0]);  
-            DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode)path.getLastPathComponent();  
-            if (firstNode.getChildCount() > 0 && target.isNodeSibling(firstNode)) {  
+            DefaultMutableTreeNode firstNode = (DefaultMutableTreeNode)path.getLastPathComponent();
+            
+            if (firstNode.getChildCount() > 0 && firstNode.isNodeChild(target)) {
                 return false;
             } //if
             
@@ -356,10 +324,15 @@ public class CanvasEditor extends JTree {
                 index = parent.getChildCount();  
             } //if
             
-            // Add data to model. 
+            /*
+            *   Add
+            */
             for (DefaultMutableTreeNode node : nodes) {
-                model.insertNodeInto((DefaultMutableTreeNode)node.getUserObject(), parent, index++);  
+                model.insertNodeInto(node, parent, index);
+                tree.expandPath(new TreePath(node.getPath()));
             } //for
+            
+            tree.expandPath(new TreePath(parent.getPath()));
             
             return true;
         } //importData
@@ -382,6 +355,131 @@ public class CanvasEditor extends JTree {
         } //exportDone
     }
     
+    private static class OneLevelSelection implements TreeSelectionListener {
+        @Override public void valueChanged(TreeSelectionEvent e) {
+            JTree tree = (JTree)e.getSource();
+            TreeSelectionModel selectionModel = tree.getSelectionModel();
+            
+            TreePath[] selectedPaths = tree.getSelectionPaths();
+            
+            if (selectedPaths == null) {
+                return;
+            }
+            
+            TreePath[] changedPaths = e.getPaths();
+            
+            ArrayList<TreePath> addedPaths = new ArrayList<TreePath>();
+            
+            DefaultMutableTreeNode parent = null;
+            
+            /*
+            *   Retrieve all added paths in changed paths
+            *
+            *   If a path was removed, set that to the path
+            */
+            for (TreePath path : changedPaths) {
+                if (e.isAddedPath(path)) {
+                    addedPaths.add(path);
+                } //if
+                else {
+                    parent = (DefaultMutableTreeNode)path.getLastPathComponent();
+                } //else
+            } //for
+            
+            /*
+            *   If no path was found, look in the currently selected paths
+            */
+            if (parent == null) {
+                for (TreePath path : tree.getSelectionPaths()) {
+                    if (!addedPaths.contains(path)) {
+                        parent = (DefaultMutableTreeNode)path.getLastPathComponent();
+                        
+                        break;
+                    } //if
+                } //for
+            } //if
+            
+            /*
+            *   If a path was still not found, all components have the same
+            *   path
+            */
+            if (parent != null) {
+                /*
+                *   Retrieve the parent of the path
+                */
+                parent = (DefaultMutableTreeNode)parent.getParent();
+                
+                ArrayList<TreePath> keep = new ArrayList<TreePath>();
+                
+                for (TreePath path : selectedPaths) {
+                    if (((DefaultMutableTreeNode)path.getLastPathComponent()).getParent() == parent) {
+                        keep.add(path);
+                    } //if
+                } //for
+                
+                if (keep.size() > 0) {
+                    selectionModel.setSelectionPaths(keep.toArray(new TreePath[keep.size()]));
+                } //if
+            } //if
+        } //valueChanged
+    } //OneLevelSelection
+    
+    private static class SortedSelection implements TreeSelectionListener {
+        private static class Compare implements java.util.Comparator {
+            private JTree tree;
+            
+            public Compare(JTree tree) {
+                this.tree = tree;
+            }
+            
+            @Override public int compare(Object left, Object right) {
+                /*
+                *   -       left < right
+                *   0       left == right
+                *   +       left > right
+                */
+                
+                return tree.getRowForPath((TreePath)right) - tree.getRowForPath((TreePath)left);
+            }
+        }
+        
+        @Override public void valueChanged(TreeSelectionEvent e) {
+            JTree tree = (JTree)e.getSource();
+            TreeSelectionModel selectionModel = tree.getSelectionModel();
+            
+            TreePath[] selectedPaths = tree.getSelectionPaths();
+            
+            if (selectedPaths == null) {
+                return;
+            }
+            
+            java.util.List<TreePath> selectedPathList = Arrays.asList(selectedPaths);
+            
+            java.util.Collections.sort(selectedPathList, new Compare(tree));
+            
+            selectionModel.setSelectionPaths(selectedPathList.toArray(selectedPaths));
+        } //valueChanged
+    } //SortedSelection
+    
+    private static class DeleteElement extends KeyAdapter {
+        @Override public void keyTyped(KeyEvent keyEvent) {
+            if (keyEvent.getKeyChar() == KeyEvent.VK_DELETE) {
+                JTree tree = (JTree)keyEvent.getSource();
+                DefaultTreeModel model = (DefaultTreeModel)(tree.getModel());
+                
+                TreePath[] selectedPaths = tree.getSelectionPaths();
+                
+                if (selectedPaths == null) {
+                    return;
+                } //if
+                
+                for (TreePath path : selectedPaths) {
+                    model.removeNodeFromParent((DefaultMutableTreeNode)path.getLastPathComponent());
+                } //for
+            } //if
+        } //keyTyped
+    } //DeleteElement
+    
     public CanvasEditor() {
         setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
         
@@ -396,12 +494,15 @@ public class CanvasEditor extends JTree {
         setDragEnabled(true);
         setDropMode(DropMode.ON_OR_INSERT);
         
-        getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
+        getSelectionModel().setSelectionMode(javax.swing.tree.TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
         setAutoscrolls(true);
         
-        //setRowHeight(0);
-        
         setTransferHandler(new Transfer());
+        
+        addTreeSelectionListener(new OneLevelSelection());
+        addTreeSelectionListener(new SortedSelection());
+        
+        addKeyListener(new DeleteElement());
     } //CanvasEditor
     
     private void expand(final int position) {

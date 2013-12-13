@@ -145,7 +145,7 @@ public class Canvas extends JTable {
         
         setDropMode(DropMode.ON_OR_INSERT);
         
-        getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setShowHorizontalLines(false);
         setAutoscrolls(true);
         
