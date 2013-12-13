@@ -1,8 +1,8 @@
 package editor;
 
-import dragdrop.DragDropList;
+import static editor.Testing2.populateCanvas;
+import editor.canvas.CanvasEditor;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -13,26 +13,26 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
 import static javax.swing.TransferHandler.MOVE;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 public class Editor extends JFrame {
 
-    DefaultListModel from = new DefaultListModel();
-    JList dragFrom;
-
+    private DefaultListModel from = new DefaultListModel();
+    private JList dragFrom;
+    public String [] canvasString;
+    
     public Editor() {
         super("Learn To Code");
 
@@ -45,7 +45,7 @@ public class Editor extends JFrame {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
-   
+
         Components.addMenu(p); //Adding Menu
         add(p, BorderLayout.NORTH);
 
@@ -66,14 +66,30 @@ public class Editor extends JFrame {
         JLabel label = new JLabel("Drag from here:");
         label.setAlignmentX(0f);
         p.add(label);
+
         JScrollPane sp = new JScrollPane(dragFrom);
         sp.setAlignmentX(0f);
         p.add(sp);
         add(p, BorderLayout.WEST);
 
-        DragDropList copyTo = new DragDropList();
-        copyTo.setTransferHandler(new ToTransferHandler(TransferHandler.COPY));
-        copyTo.setDropMode(DropMode.INSERT);
+        //DragDropList copyTo = new DragDropList();
+        //copyTo.setTransferHandler(new ToTransferHandler(TransferHandler.COPY));
+        //copyTo.setDropMode(DropMode.INSERT);
+        CanvasEditor editor = new CanvasEditor();
+
+        DefaultTreeModel tree = (DefaultTreeModel) editor.getModel();
+        DefaultMutableTreeNode nested = new DefaultMutableTreeNode(new JLabel("nested"));
+        ((JLabel) nested.getUserObject()).setOpaque(true);
+        
+        canvasString = new String[] {"Function","Function Call"};
+        
+        populateCanvas(tree, (DefaultMutableTreeNode) tree.getRoot(), canvasString);
+        tree.reload();
+        tree.insertNodeInto(nested, (MutableTreeNode) tree.getRoot(), editor.getRowCount());
+
+        populateCanvas(tree, nested, canvasString);
+        //editor.setPreferredSize(new Dimension(300, 400));
+        editor.expand();
 
         p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -84,12 +100,12 @@ public class Editor extends JFrame {
         label.setAlignmentX(0f);
         p.add(label);
 
-        sp = new JScrollPane(copyTo);
+        sp = new JScrollPane(editor);
         sp.setAlignmentX(0f);
         p.add(sp);
         p.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
         add(p, BorderLayout.CENTER);
-        
+
         p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
@@ -101,7 +117,7 @@ public class Editor extends JFrame {
 
         //Example of adding components
         Components.addPanel(0f, p, 170, 100);
-                
+
         p.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
         add(p, BorderLayout.EAST);
 
