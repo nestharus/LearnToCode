@@ -155,7 +155,7 @@ public class Editor extends JFrame {
         add(p, BorderLayout.EAST);
 
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        getContentPane().setPreferredSize(new Dimension(1200, 690));
+        getContentPane().setPreferredSize(new Dimension(1700, 690));
     }
 
     public static void createAndShowGUI() {
