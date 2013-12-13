@@ -62,7 +62,7 @@ public class Testing {
         
     }
     
-    public static void main(String args[]) {
+    /*public static void main(String args[]) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new JFrame();
@@ -73,9 +73,9 @@ public class Testing {
                 JPanel panel = new JPanel();
                 panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
                 
-                /*
-                *   Canvas, CanvasModel, Container
-                */
+                
+                //   Canvas, CanvasModel, Container
+                
                 Object[] canvas1 = getCanvas(new String[]{"test 1", "test 2", "test 3"}, false);
                 Object[] canvas2 = getCanvas(new String[]{"test 4", "test 5", "test 6"}, true);
                 
@@ -89,5 +89,5 @@ public class Testing {
                 frame.setVisible(true);
             }
         });
-    }
+    }*/
 }

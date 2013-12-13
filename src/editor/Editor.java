@@ -31,7 +31,6 @@ public class Editor extends JFrame {
 
     private DefaultListModel from = new DefaultListModel();
     private JList dragFrom;
-    public String [] canvasString;
     
     public Editor() {
         super("Learn To Code");
@@ -81,14 +80,13 @@ public class Editor extends JFrame {
         DefaultMutableTreeNode nested = new DefaultMutableTreeNode(new JLabel("nested"));
         ((JLabel) nested.getUserObject()).setOpaque(true);
         
-        canvasString = new String[] {"Function","Function Call"};
-        
-        populateCanvas(tree, (DefaultMutableTreeNode) tree.getRoot(), canvasString);
+             
+        populateCanvas(tree, (DefaultMutableTreeNode) tree.getRoot(), new String[] {"Example"});
         tree.reload();
         tree.insertNodeInto(nested, (MutableTreeNode) tree.getRoot(), editor.getRowCount());
 
-        populateCanvas(tree, nested, canvasString);
-        //editor.setPreferredSize(new Dimension(300, 400));
+        populateCanvas(tree, nested, new String[] {"Nested Example"});
+    
         editor.expand();
 
         p = new JPanel();

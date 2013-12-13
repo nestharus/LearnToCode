@@ -133,36 +133,33 @@ public final class Components {
         Dimension minimumSize = new Dimension(0, 10);
         Dimension preferredSize = new Dimension(0, 10);
 
-        /*
-         addLabel(" Declare Function", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addLabel(" Call Function", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addLabel(" If_statements", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addLabel(" Loops", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addLabel(" Declare Variable", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addLabel(" Assing Value to Variable", Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumS, preferredS, maximumS));
-        
-        
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-         addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
-         panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
-        
-         */
+        addLabel(" Declare Function", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addLabel(" Call Function", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addLabel(" If_statements", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addLabel(" Loops", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addLabel(" Declare Variable", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addLabel(" Assing Value to Variable", Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumS, preferredS, maximumS));
+
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+        addPanel(Component.CENTER_ALIGNMENT, panel, 145, 50);
+        panel.add(new Box.Filler(minimumSize, preferredSize, maximumSize));
+
     }
 }

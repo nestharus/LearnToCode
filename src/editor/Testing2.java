@@ -1,6 +1,7 @@
 package editor;
 
 import editor.canvas.Canvas;
+import editor.Components;
 import editor.toolbars.Toolbar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -28,26 +29,38 @@ public class Testing2 {
         canvasTree.insertNodeInto(node, parent, position);
     }
     
-    private static void populateCanvas(DefaultTreeModel canvasTree, DefaultMutableTreeNode parent, String[] str) {
+    public static void populateCanvas(DefaultTreeModel canvasTree, DefaultMutableTreeNode parent, String[] str) {
         DefaultMutableTreeNode node;
         
-        addNode(canvasTree, parent, getLabel(str[0]), 0);
-        addNode(canvasTree, parent, getLabel(str[1]), 1);
-        addNode(canvasTree, parent, getLabel(str[2]), 2);
+        for (int i = 0; i < str.length; i++)
+            addNode(canvasTree, parent, getLabel(str[i]), 0);
+
         
         JPanel ipanel = new JPanel();
         ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
-        ipanel.setPreferredSize(new Dimension(200, 25));
+        ipanel.setPreferredSize(new Dimension(100, 25));
         Dimension d = new Dimension(15, 0);
         ipanel.add(new Box.Filler(d, d, d));
-        ipanel.add(new JCheckBox());
+        ipanel.add(new JCheckBox());        
         JTextField field = new JTextField();
         field.setColumns(15);
         ipanel.add(field);
-        addNode(canvasTree, parent, ipanel, 3);
+        addNode(canvasTree, parent, ipanel, str.length);
+        
+        ipanel = new JPanel();
+        ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
+        ipanel.setPreferredSize(new Dimension(100, 25));
+        Components.addButton("testing", 0f, ipanel, 100, 50);
+        addNode(canvasTree, parent, ipanel, str.length);
+        
+        ipanel = new JPanel();
+        ipanel.setLayout(new BoxLayout(ipanel, BoxLayout.LINE_AXIS));
+        ipanel.setPreferredSize(new Dimension(100, 25));
+        Components.addPanel(0f, ipanel, 100, 25);
+        addNode(canvasTree, parent, ipanel, str.length);
     }
     
-    public static void main(String args[]) {
+    /*public static void main(String args[]) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 JFrame frame = new JFrame();
@@ -86,5 +99,5 @@ public class Testing2 {
                 editor.expand();
             }
         });
-    }
+    }*/
 }
