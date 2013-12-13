@@ -19,32 +19,68 @@ import java.awt.event.KeyEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataHandler;
-
-import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
 import javax.swing.DropMode;
 
 import javax.swing.JComponent;
 import javax.swing.JTree;
-import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultTreeSelectionModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import static javax.swing.TransferHandler.COPY;
 import static javax.swing.TransferHandler.COPY_OR_MOVE;
 import static javax.swing.TransferHandler.MOVE;
 
-public class CanvasEditor extends JTree {
+public class CanvasEditor extends JTree { /*
+*************************************************************************************
+*
+*   Draggable Information (for accepting and passing data)
+*
+*       DataFlavor((
+*               DataFlavor.javaJVMLocalObjectMimeType + 
+*               ";class=\"" + javax.swing.tree.DefaultMutableTreeNode[].class.getName() + "\""))
+*
+*       getTransferData -> DefaultMutableTreeNode[]
+*
+*   Use TreeModelListener to track data changes, don't rely on the CanvasEditor
+*   to store the data.
+*
+*************************************************************************************
+*
+*   Currently does not support data validation for dragging. Wlil need to
+*   add validation listeners for modular design.
+*
+*       Consider
+*
+*           integer c
+*
+*           function hi
+*               integer a
+*           function b
+*               integer c
+*
+*               set c = 5
+*           function o
+*               integer a
+*
+*   the global integer c should not be able to be dragged into function b
+*
+*   function b's set c = 5 should only be able to either go global or function b
+*
+*   int a can only go into either global or function b (if shadowing is used)
+*
+*************************************************************************************
+*
+*   For delete, if a single element is selected, when that element is deleteted,
+*   the next element should be selected. While delete is held, selected elements should
+*   be deleted.
+*
+************************************************************************************/
     private static class Editor extends DefaultTreeCellEditor {
         private Component value;
         
@@ -85,8 +121,6 @@ public class CanvasEditor extends JTree {
         *   Can edit
         */
         @Override public boolean isCellEditable(EventObject e) {
-            if (e instanceof MouseEvent) { return ((MouseEvent)e).getClickCount() >= 1; }
-            
             return true;
         } //isCellEditable
     } //Editor
@@ -96,7 +130,7 @@ public class CanvasEditor extends JTree {
             super();
             
             setOpaque(true);
-        }
+        } //Renderer
         
         @Override public Component getTreeCellRendererComponent(final JTree tree,
                                                                 final Object value,
@@ -119,10 +153,10 @@ public class CanvasEditor extends JTree {
             
             if (isSelected) {
                 component.setBackground(Color.GRAY);
-            } 
+            } //if
             else {
                 component.setBackground(Color.WHITE);
-            }
+            } //else
 
             return component;
         } //getTreeCellEditorComponent
@@ -138,13 +172,13 @@ public class CanvasEditor extends JTree {
 
             public NodesTransferable(DefaultMutableTreeNode[] nodes) {  
                 this.nodes = nodes;  
-             }  //NodesTransferable
+            }  //NodesTransferable
 
             public Object getTransferData(DataFlavor flavor)
             throws UnsupportedFlavorException {  
-                if(!isDataFlavorSupported(flavor)) {
+                if (!isDataFlavorSupported(flavor)) {
                     throw new UnsupportedFlavorException(flavor);  
-                }
+                } //if
                 
                 return nodes;  
             }  //getTransferData
@@ -364,7 +398,7 @@ public class CanvasEditor extends JTree {
             
             if (selectedPaths == null) {
                 return;
-            }
+            } //if
             
             TreePath[] changedPaths = e.getPaths();
             
@@ -430,7 +464,7 @@ public class CanvasEditor extends JTree {
             
             public Compare(JTree tree) {
                 this.tree = tree;
-            }
+            } //Compare
             
             @Override public int compare(Object left, Object right) {
                 /*
@@ -440,8 +474,8 @@ public class CanvasEditor extends JTree {
                 */
                 
                 return tree.getRowForPath((TreePath)right) - tree.getRowForPath((TreePath)left);
-            }
-        }
+            } //compare
+        } //Compare
         
         @Override public void valueChanged(TreeSelectionEvent e) {
             JTree tree = (JTree)e.getSource();
